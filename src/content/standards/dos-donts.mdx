@@ -1,0 +1,156 @@
+---
+title: Dos & Don'ts
+description: Concrete examples for our core principles with quick, practical code snippets.
+---
+
+# Dos & Don'ts
+
+This page shows **specific behaviors** to follow (Do) and avoid (Don't), with short examples.  
+Read alongside [Coding](/standards/coding)
+
+## Principles 
+
+### DRY — Don’t Repeat Yourself
+
+![DRY Meme](/images/memes/dry-meme.jpg)
+
+**Do**
+- Extract shared logic into a function/module when you see duplication.
+- Centralize constants and config.
+
+**Don’t**
+- Copy/paste logic in multiple places with slight variations.
+
+```ts
+// Don't — duplicated price calc in two places
+function calcTotalA(items) { return items.reduce((s, i) => s + i.price * i.qty, 0); }
+function calcTotalB(items) { return items.reduce((s, i) => s + i.price * i.qty, 0); }
+
+// Do — one reusable function
+export function calcTotal(items: { price: number; qty: number }[]) {
+  return items.reduce((sum, it) => sum + it.price * it.qty, 0);
+}
+```
+
+### KISS — Keep It Simple
+
+![KISS Meme](/images/memes/kiss-meme.png)
+
+**Do**
+- Prefer straightforward solutions and plain data structures.
+- Ensure readability for future developers (average developer shouldn't have to google/look things up to understand).
+
+**Don’t**
+- Over-engineer abstractions or use clever one-liners that hurt readability.
+
+```ts
+// Don't — overly clever
+const flat = arr => [].concat(...arr.map(x => (Array.isArray(x) ? flat(x) : x)));
+
+// Do — readable and good enough for our needs
+export function flatten<T>(arr: (T | T[])[]): T[] {
+  const out: T[] = [];
+  for (const v of arr) Array.isArray(v) ? out.push(...v) : out.push(v);
+  return out;
+}
+```
+
+### YAGNI — You Aren’t Gonna Need It
+
+![YAGNI Meme](/images/memes/yagni-meme.png)
+
+**Do**
+- Build only what the current use case requires.
+
+**Don't**
+- Add flags/features “just in case.” (might lead to dead/commented/unused code that adds to compile time)
+
+```ts
+// Don't — premature config that's unused
+type EmailOpts = { html?: string; text?: string; priority?: 'low'|'high'; retry?: number };
+function sendEmail(to: string, opts: EmailOpts) { /* ... */ }
+
+// Do — minimal, fits current usage
+type EmailOpts = { html?: string; text?: string };
+function sendEmail(to: string, opts: EmailOpts) { /* ... */ }
+```
+
+### Single Responsibility
+
+![Single Responsibility](/images/memes/srp-meme.png)
+
+**Do**
+- Keep functions/modules focused on one purpose.
+
+**Don’t**
+- Mix validation, business logic, persistence, and notifications in one place.
+
+```ts
+// Don't — one function does everything
+async function registerUser(form: any) {
+  if (!form.email) throw new Error('email required');
+  const user = await db.users.create(form);
+  await emailWelcome(user.email);
+  return user;
+}
+
+// Do — split responsibilities (some of these should even be in their own files, like user.dao.ts for database calls)
+function validateUserInput(form: any) { if (!form.email) throw new Error('email required'); }
+async function createUser(data: any) { return db.users.create(data); }
+async function notifyWelcome(email: string) { await emailWelcome(email); }
+
+export async function registerUser(form: any) {
+  validateUserInput(form);
+  const user = await createUser(form);
+  await notifyWelcome(user.email);
+  return user;
+}
+```
+
+### Clean Code (Readability)
+
+![Clean Code Meme](/images/memes/cleancode-meme.jpg)
+
+**Dos**
+- Favor clear names and early returns
+
+**Don't**
+- Nest deeply and use vague names
+
+```ts 
+// Don't
+function p(u, a) {
+  if (u) {
+    if (a) {
+      // ...
+    } else {
+      // ...
+    }
+  }
+}
+
+// Do
+function processUser(userId: string, isAdmin: boolean) {
+  if (!userId) return;
+  if (isAdmin) { /* ... */ return; }
+  /* ... */
+}
+```
+
+### Collective Code Ownership & the “Boy Scout” Rule
+
+![Boy Scout Rule](/images/memes/boyscoutrule.png)
+
+> Leave the code a little better than you found it. This originated from teaching young groups that when you go camping in the outdoors/forests, you should always leave your campsite better than you found it. If you walk to a campsite and see someone else before you throw trash everywhere, you should try to clean some of it up and not say "that's not my job"
+
+**Do**
+- Tidy small issues you encounter in passing (naming, typos, low-risk refactors).
+- Fix obvious lints and add missing tests near the change you’re making.
+- Add a brief note in your PR describing opportunistic cleanups.
+
+**Don’t**
+- Sneak in large, unrelated refactors under a feature/change.
+- Change public APIs or folder structure “just because.”
+- Leave obvious messes (“not my code”) for the next person.
+
+Be careful of scope though. You don't want your PR being too large. This is where you should make a seperate PR for fixing the issues, but you need to clearly comment that intent _and_ follow through on it.

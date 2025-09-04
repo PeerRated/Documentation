@@ -1,0 +1,33 @@
+---
+title: Coding Standards
+description: Practical, enforceable guidelines for readable, maintainable code.
+---
+
+# Coding Standards
+
+This section should be read along side the [Dos/Donts](/standards/dos-donts) page.
+
+Applies to all code in this org. Language/tool specifics may add to these, but must not contradict them.
+
+## Principles
+- **DRY (Don’t Repeat Yourself):** Extract shared logic into functions/modules; avoid copy-paste divergence
+- **KISS (Keep It Simple):** Prefer straightforward solutions over clever ones; no unnecessary abstractions
+- **YAGNI (You Aren’t Gonna Need It):** Don’t build for hypotheticals; add complexity when there’s a real need
+- **Single Responsibility:** Each module/class/function should do one thing well
+- **Clean Code:** Readability over brevity; clear naming, small functions, minimal side effects
+- **Collective Code Ownership:** Everyone owns all code. When you touch a file, you’re responsible for leaving it a bit better—rename unclear variables, extract tiny helpers, remove dead code, add a missing test—without turning the PR into a sweeping refactor
+
+
+## Structure & Organization
+- Keep files focused and < ~300 lines when practical
+- Avoid “God” modules; split when files grow or mix concerns
+
+## Comments & Docs
+Usually we should not have comments at all. If we do, we should think why do we have comments here. Is the code complex? Why is the code complex? Is there anything we can do to reduce it? There are some rare cases where we need comments as shown below, however most times we can avoid it. You can see the dos/donts section for examples.
+
+- Comment _why_, not what. Prefer clear code over heavy comments
+- Public functions/types get brief doc comments when non-obvious
+- Keep examples in docs up to date with actual code
+
+**TODO**
+- Need to add sections such as add testing
