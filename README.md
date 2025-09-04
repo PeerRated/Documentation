@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PeerRated Documentation
 
-## Getting Started
+This repository contains the documentation site for PeerRated, built with [Next.js](https://nextjs.org/) and [Nextra](https://nextra.site/) for documentation.
 
-First, run the development server:
+It is currently being hosted on [Vercel](https://vercel.com).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Setup and Installation
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### Prerequisites
+- [NodeJS](https://nodejs.org) - most recent version is okay
+- [pnpm](https://pnpm.io/installation) - I use `pnpm` instead of `npm`. Feel free to read the differences between `npm` vs `pnpm` [here](https://pnpm.io/pnpm-vs-npm)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### Run Deployment Server
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run `pnpm dev` to start the localserver which you can open from your browser. 
 
-## Learn More
+Run `pnpm build` to build the project and test for any errors before deployment.
 
-To learn more about Next.js, take a look at the following resources:
+#### Husky Precommit Hooks
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This repo uses [Husky](https://typicode.github.io/husky/) to enforce quality before committing. Whenever you commit, it will run whatever is in `.husky/pre-commit` file. Usually we will have the basics of running builds, tests, linting, and any other commands.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The idea here is it enforces code quality to ensure no broken build gets published to PR. You can catch these issues before even checking in a commit.
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `app/[[...mdxPath]]/page.tsx` → Catch-all route for Nextra docs pages (shouldn't need to update this)
+- `content/` → All .mdx documentation files live here, structure is defined by the `_meta.json` files
+- `theme.config.tsx` → Nextra theme configuration (navigation, logo, etc.)
+- `public/images/` → Where we store our images and assets
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributing
+
+To learn how to contribute to this repo, please read the following [How To Documentation](https://peerrated-documentation.vercel.app/writing).
+
+When you have tested your changes and ready to publish, create a new branch such as `docs/<page you are updating>` then make a PR to main for review. Be sure to fill in the PR description
