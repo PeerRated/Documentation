@@ -1,0 +1,122 @@
+---
+title: How to Update Docs
+description: Quick guide for editing docs, style rules, and common MDX examples.
+---
+
+# How to Update These Docs
+
+This page shows **where** to make changes, **how** to propose them, and **exact MDX snippets** you can copy
+
+## Where to Edit
+- Docs live under this repo’s **content** folder
+- Most shared assets (images, logos, memes) go in **/public/images/** and are referenced by path
+
+## How to Propose Changes
+1. Create a branch: `git checkout -b docs/<short-slug>`
+2. Edit or add `.mdx` files (use the snippets below)
+3. Run locally and verify: `pnpm run dev`
+4. Open a PR using the **PR template**
+
+## Style Rules
+- Link to deeper pages; avoid duplicating content
+- Put images in `/public/images/...`
+- Start every page with front-matter
+- Keep filenames kebab-case: `how-to-update.mdx`
+
+---
+
+## New Page Template
+
+```md
+---
+title: Page Title
+description: One-line summary of the page.
+---
+
+# Page Title
+
+Short intro. Link to related pages when helpful.
+```
+
+## Headings 
+
+```md
+# H1 — page title (use once)
+## H2 — major section
+### H3 — subsection
+#### H4 — rarely needed
+```
+
+## Text, Lists, Checklists 
+```md
+**Bold**, *italic*, `inline code`, and a [link](/onboarding).
+
+- Unordered list item
+- Another item
+
+1. Ordered item
+2. Another item
+
+- [ ] To-do (unchecked)
+- [x] To-do (done)
+```
+
+## Code Blocks
+```ts showLineNumbers
+export function hello(name: string) {
+  return `Hello, ${name}`;
+}
+```
+
+## Details / Summary (Dropdown)
+
+Rendered example:
+
+<details> 
+    <summary>Click to expand deployment steps</summary>
+
+    Merge PR to main
+    Wait for CI to deploy
+    Smoke test key flows
+</details>
+
+**How to write it**
+```md
+<details>
+  <summary>Click to expand deployment steps</summary>
+
+  1. Merge PR to `main`  
+  2. Wait for CI to deploy  
+  3. Smoke test key flows
+</details>
+```
+
+## Images 
+
+Put files in `/public/images/...`
+
+```
+![Alt text](/images/diagrams/architecture.webp)
+```
+
+## Tables
+```md
+| Role      | Responsibility          |
+|-----------|--------------------------|
+| Frontend  | UI, accessibility, UX    |
+| Backend   | APIs, services, DB       |
+| Infra     | CI/CD, IaC, monitoring   |
+```
+
+## Callouts
+
+```md
+> **Note:** Keep secrets out of screenshots and logs.
+```
+
+## Internal vs External Links 
+
+```md
+[Onboarding](/onboarding)        <!-- internal absolute path -->
+[GitHub Org](https://github.com/PeerRated)  <!-- external -->
+```
