@@ -1,7 +1,12 @@
+import nextra from "nextra";
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+const withNextra = nextra({
+  defaultShowCopyCode: true,
+});
+
+const nextConfig: NextConfig = withNextra({
+  reactStrictMode: true,
+});
 
 export default nextConfig;
