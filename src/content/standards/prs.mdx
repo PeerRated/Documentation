@@ -1,0 +1,67 @@
+---
+title: Pull Requests
+description: Expectations for authors and reviewers, with templates, proof requirements, and a blameless, future-fix culture.
+---
+
+# Pull Requests
+
+PRs are how we change behavior safely and share context. Authors must understand what they change, explain why, and prove it works. Review is blameless and focused on _fixing forward_ not blame.
+
+In big tech companies like Amazon/AWS, Apple, Google, Netflix they will always have a code review process. Sometimes even needing 2+ reviews from people. This is a normal standard/process and it really helps with code quality and a great feedback mechanism. _Remember, don't get defensive during your PR reviews, it can get stressful at first, but it really is just a learning/growing mechanism!_
+
+> We know you may not have written the original code. Our rule: **leave the code better than you found it** (Boy Scout Rule), without hiding large refactors inside unrelated PRs.
+
+## What we expect (authors)
+
+- **Understand your change**  
+  If you can’t explain the current behavior and your new behavior, you’re not ready to ship (as people say, software development is mostly _reading other people's code_ instead of adding/writing on top of it)
+- **Explain “why”**  
+  Tie to a ticket/BRD/bug. “Someone else did it this way” is not a reason
+- **Prove it works**  
+  Provide tests and/or a reproducible manual test plan. Include screenshots/recordings for UI and logs/traces for backends
+- **Keep scope tight**  
+  One concern per PR. Split refactors from features/bugfixes if necessary.
+- **Be professional, not defensive**  
+  Treat review comments as input to make the change safer/clearer.
+- Keep your PRs short, 150 lines of changes is usually a sweetspot. If you need more lines, try to figure out how to make smaller PRs. The longer the PR is, the harder it will be for the reviewer, and longer time it may take to get your PR to production
+
+![PR Reviews](/images/memes/pr-review.png)
+
+## What we expect (reviewers)
+
+- **Assume good intent**; ask clarifying questions before prescribing solutions. (Usually your first comment should almost always be a question. "Do you think X?")
+- **Be specific**: distinguish blocking issues from suggestions/nits. (If something is a nitpick, that means you are okay they merge the PR and they can update it later. I usually do `nit: <my comment>`)
+- **Focus on the code and behavior**, not the person.
+- **Help fix forward**: if legacy patterns are poor, propose the better pattern or a follow-up ticket.
+- **Be helpful**: Don't just say something is bad, explain _why_ it may be a bad practice (e.g., send examples, send documentation) and then explain _how_ to fix it. How can the author learn?
+
+
+## Required PR template (copy into your PR)
+
+At a minimum you should have the following. If you have additional information such as documents you wrote, add that. 
+
+```md
+## Summary
+Explain _why_ this is needed. This should be given to anyone and they should understand what the problem was. You could _also add_ a ticket/document/bug link here if needed. Do not go into technical details
+
+## Changes Made
+Explain what technical changes you made (maybe in bullet points)
+
+## Tests
+Explain how you tested it 
+- If UI change show screenshots (before/after of UI), or make a GIF (I use licecap)
+- If backend change, spin up the UI locally and prove it's working, or show screenshots of the APIs you changed, etc 
+- Add Unit Tests (UTs)/integration tests (we need to do more of this...)
+```
+
+## Author checklist (before requesting review)
+
+[] Title and description follow the template (with links)
+[] Scope is focused; unrelated cleanup is split or ticketed
+[] Tests added/updated; CI is green locally or in draft CI
+[] Docs/runbooks/config examples updated if behavior changed
+[] Screenshots/recordings/logs attached where applicable
+[] Does it follow all the principles? (E.g., DRY, YAGNI, KISS)
+[] Do the files you touched have dead or commented out code you need to remove?
+[] Do the files you touched need to have small refactors?
+[] Is your PR <300 lines?
