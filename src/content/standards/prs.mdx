@@ -68,22 +68,22 @@ Explain how you tested it
 
 ## Basic Git Commands
 
-- **```git status```** - show modified files in working directory   
-- **```git add [-A] [file]```** - add a file to next commit (aka stage)  
-  &emsp;&minus;&nbsp; optional ```-A``` adds all modified files
-- **```git restore --staged [file]```** - unstage a file so it is not included in commit  
-- **```git commit -m "[commit message]"```** - commit staged content  
+- **`git status`** - show modified files in working directory   
+- **`git add [-A] [file]`** - add a file to next commit (aka stage)  
+  &emsp;&minus;&nbsp; optional `-A` adds all modified files
+- **`git restore --staged [file]`** - unstage a file so it is not included in commit  
+- **`git commit -m "[commit message]"`** - commit staged content  
   
-- **```git branch```** - list branches, denoting current branch with *  
-- **```git checkout [-b] [branch-name]```** - switch working branch to branch-name  
-  &emsp;&minus;&nbsp; optional ```-b``` creates a new branch called branch-name
+- **`git branch`** - list branches, denoting current branch with *  
+- **`git checkout [-b] [branch-name]`** - switch working branch to branch-name  
+  &emsp;&minus;&nbsp; optional `-b` creates a new branch called branch-name
 
-- **```git push [origin] [branch-name]```** - push local commits to remote repository  
-- **```git fetch```** - fetch commits from remote repository without changing local working directory
-- **```git merge [branch-name]```** - merge branch-name into current branch
-- **```git rebase [branch-name]```** - apply and add commits from current branch to branch-name
-- **```git pull```** - fetch and merge any commits from remote repository  
-- **```git log```** - show commit history for active branch  
+- **`git push [origin] [branch-name]`** - push local commits to remote repository  
+- **`git fetch`** - fetch commits from remote repository without changing local working directory
+- **`git merge [branch-name]`** - merge branch-name into current branch
+- **`git rebase [branch-name]`** - apply and add commits from current branch to branch-name
+- **`git pull`** - fetch and merge any commits from remote repository  
+- **`git log`** - show commit history for active branch  
 
 ## Conventional Commit Standards
 
@@ -97,17 +97,17 @@ Basic Commit Message Structure:
 [optional footer(s)]
 ```
 
-There should be blank lines in between the type, body, and footer. Footer tokens must be connected with ```-``` if more than one word, with ```BREAKING CHANGE``` being an exception.
+There should be blank lines in between the type, body, and footer. Footer tokens must be connected with `-` if more than one word, with `BREAKING CHANGE` being an exception.
 
-**BREAKING CHANGE:** a commit that has a footer **```BREAKING CHANGE:```**, or appends a **```!```** after the type/scope, introduces a breaking API change  
+**BREAKING CHANGE:** a commit that has a footer **`BREAKING CHANGE:`**, or appends a **`!`** after the type/scope, introduces a breaking API change  
 
 **Types:**
-- **```fix:```** patch a bug
-- **```feat:```** introduce a new feature
-- **```chore:```** update grunt tasks
-- **```docs:```** change documentation
-- **```perf:```** performance improvement
-- **```style:```** change formatting, add missing semicolons, etc.
-- **```refactor:```** refactor production code (e.g. rename a variable)
-- **```test:```** add missing tests or change existing tests
-- **```build:```** update build configuration, development tools, etc.
+- **`fix:`** patch a bug
+- **`feat:`** introduce a new feature
+- **`chore:`** update grunt tasks
+- **`docs:`** change documentation
+- **`perf:`** performance improvement
+- **`style:`** change formatting, add missing semicolons, etc.
+- **`refactor:`** refactor production code (e.g. rename a variable)
+- **`test:`** add missing tests or change existing tests
+- **`build:`** update build configuration, development tools, etc.
