@@ -56,12 +56,58 @@ Explain how you tested it
 
 ## Author checklist (before requesting review)
 
-[] Title and description follow the template (with links)
-[] Scope is focused; unrelated cleanup is split or ticketed
-[] Tests added/updated; CI is green locally or in draft CI
-[] Docs/runbooks/config examples updated if behavior changed
-[] Screenshots/recordings/logs attached where applicable
-[] Does it follow all the principles? (E.g., DRY, YAGNI, KISS)
-[] Do the files you touched have dead or commented out code you need to remove?
-[] Do the files you touched need to have small refactors?
-[] Is your PR less than 300 lines?
+- [ ] Title and description follow the template (with links)
+- [ ] Scope is focused; unrelated cleanup is split or ticketed
+- [ ] Tests added/updated; CI is green locally or in draft CI
+- [ ] Docs/runbooks/config examples updated if behavior changed
+- [ ] Screenshots/recordings/logs attached where applicable
+- [ ] Does it follow all the principles? (E.g., DRY, YAGNI, KISS)
+- [ ] Do the files you touched have dead or commented out code you need to remove?
+- [ ] Do the files you touched need to have small refactors?
+- [ ] Is your PR less than 300 lines?
+
+## Basic Git Commands
+
+- **`git status`** - show modified files in working directory   
+- **`git add [-A] [file]`** - add a file to next commit (aka stage)  
+  &emsp;&minus;&nbsp; optional `-A` adds all modified files
+- **`git restore --staged [file]`** - unstage a file so it is not included in commit  
+- **`git commit -m "[commit message]"`** - commit staged content  
+  
+- **`git branch`** - list branches, denoting current branch with *  
+- **`git checkout [-b] [branch-name]`** - switch working branch to branch-name  
+  &emsp;&minus;&nbsp; optional `-b` creates a new branch called branch-name
+
+- **`git push [origin] [branch-name]`** - push local commits to remote repository  
+- **`git fetch`** - fetch commits from remote repository without changing local working directory
+- **`git merge [branch-name]`** - merge branch-name into current branch
+- **`git rebase [branch-name]`** - apply and add commits from current branch to branch-name
+- **`git pull`** - fetch and merge any commits from remote repository  
+- **`git log`** - show commit history for active branch  
+
+## Conventional Commit Standards
+
+Basic Commit Message Structure:
+
+```md
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+There should be blank lines in between the type, body, and footer. Footer tokens must be connected with `-` if more than one word, with `BREAKING CHANGE` being an exception.
+
+**BREAKING CHANGE:** a commit that has a footer **`BREAKING CHANGE:`**, or appends a **`!`** after the type/scope, introduces a breaking API change  
+
+**Types:**
+- **`fix:`** patch a bug
+- **`feat:`** introduce a new feature
+- **`chore:`** update grunt tasks
+- **`docs:`** change documentation
+- **`perf:`** performance improvement
+- **`style:`** change formatting, add missing semicolons, etc.
+- **`refactor:`** refactor production code (e.g. rename a variable)
+- **`test:`** add missing tests or change existing tests
+- **`build:`** update build configuration, development tools, etc.
