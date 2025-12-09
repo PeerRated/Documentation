@@ -1,0 +1,6 @@
+export default {
+  index: 'Overview',
+  coding: 'Coding',
+  prs: 'Pull Requests',
+  'dos-donts': 'Dos & Don’ts'
+};
