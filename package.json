@@ -11,7 +11,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "next": "15.5.2",
+    "next": "16.0.8",
     "nextra": "^4.4.0",
     "nextra-theme-docs": "^4.4.0",
     "react": "19.1.0",
