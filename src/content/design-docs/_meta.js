@@ -1,3 +1,4 @@
 export default {
-  frontend: 'Frontend HLD'
+  frontend: 'Frontend HLD',
+  backend: 'Backend HLD'
 };

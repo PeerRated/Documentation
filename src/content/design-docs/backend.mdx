@@ -1,0 +1,311 @@
+---
+title: Backend
+description: Backend High-Level Design Documentation
+---
+
+# Backend High-Level Design
+
+**Author(s):** Aishwarya Manjunath, Naima Zida-Brown\
+**Reviewers:** Aidan Schreck, Jenny Sims, Taichen Rose, Seth Whitman\
+**Date:** 2025-09-22\
+**Status:**  Approved\
+**Doc Owners:** Naima Zida-Brown
+
+**Revision History**
+| Date | Version | Author(s) | Change |
+|---|---|---|---|
+| 2025-09-22 | 0.1 | Naima Zida-Brown, Aishwarya Manjunath | Initial Draft |
+| 2025-10-27 | 0.1 | Naima Zida-Brown, Aishwarya Manjunath | First Design Review |
+| 2025-12-19 | 0.1 | Naima Zida-Brown | Final Revision before upload to Doc website |
+
+
+## Problem Statement
+
+The Backend HLD document was created for the Peer Rated team in order to research and settle on secure, reliable, and fast architecture that fits the multi-user set-up of the platform.
+
+
+## Requirements - In Scope
+
+### Functional Requirements
+- Database must be able to save, store, retrieve, and link data.
+- Backend must be able to get the average of certain database entries.
+- Database entries should not be limited to one per category (see below) in all instances.
+  - Examples of categories: companies a user interviewed at, recruiter position title(s).
+- Backend must allow secure user registration, login and logout.
+- Must store, and retrieve user profile, reviews and ratings.
+- Should allow searching reviews, filter them by category or rating or date.
+- Admin access-allow admin to access and remove in appropriate content.
+- Backend should do a simple calculator may be like average rating things like that.
+  - Example: to post the average rating of an employer we would need to calculate the mean of their review scores.
+- Must have REST endpoints.
+
+
+### Non-Functional Requirements
+- Security - Password hashing and HTTPS traffic encryption to improve security
+- Performance - Page load within 2 seconds under typical usage
+- Performance - Search results should return in less than 1 second
+- Scalability - Allow 10,000 active users supported without issue
+- Reliability - MVP should achieve 99% uptime
+- Anonymity for all reviews
+
+
+### Assumptions
+- None
+
+
+## Requirements - Out of Scope
+- Primary databases must only handle keeping the site up. Additional features must use secondary databases.
+- Text searching and image upload must be done through secondary databases.
+
+
+## Architecture Overview
+![Architecture Design Overview for the Backend, showing the flow from development to hosting and deployment](/images/backend-architecture-overview.svg)
+
+We will use postgreSQL database (relational, tabled, reduced risk, ACID compliant [[1]](#appendix)). It may take more storage and be a higher learning curve, but consistency and protection are top priority.
+
+We will use Supabase hosting. Supabase is a newer startup (created in 2020), but is open source and uses postgreSQL, unlike Firebase which runs on NoSQL. It is the much better option for storing relational data.
+
+We will use REST API because it's easy and simple to set up. (Once we have MVP working we maybe can add a GraphQL layer on it).
+
+We will use Typescript as our language with a framework of NestJS and a modular folder structure.
+
+Our tests will be done as unit tests by using Jest (UT) and running with “npm test run”.
+
+
+## Folder Structure
+DDD (Domain Driven Design) / Modular Folder Structure (each module has its own folder).\
+**Note:** all shared/ sub-folders except for utils/ are optional.\
+**Note:** auth/ and users/ module folders are just an example of what modules can/will look like.
+
+```
+- README.md
+- src/
+  - main.ts
+  - app.module.ts
+
+  - shared/                      *(store shared/reusable components)*
+      - utils/                   *(helper functions)*
+      - decorators/              *(attach/extract metadata)*
+      - guards/                  *(checks authentication)*
+      - interceptors/            *(enforce timeouts, log requests)*
+      - filters/                 *(custom error handling)*
+      - pipes/                   *(validate incoming data)*
+
+  - config/                      *(configuration files to manage environments)*
+      - configuration.ts
+      - validation.ts
+
+  - modules/                     *(application core. elated controllers, services, entities, DTO’s)*
+      - auth/
+        - dto/                   *(per each module)*
+          - login.dto.ts
+          - register.dto.ts
+        - entities/
+          - auth.entity.ts
+          - auth.controller.ts
+          - auth.module.ts
+          - auth.services.ts
+
+      - users/
+        - dto/                   *(per each module)*
+          - create-user.dto.ts
+        - entities/
+          - users.entity.ts
+          - users.controller.ts
+          - users.module.ts
+          - users.services.ts
+  
+  - external/                    *(OPTIONAL: external packages and libraries)*
+  - tests/
+```
+
+
+[Folder Structure of a NestJS Project - GeeksforGeeks](https://www.geeksforgeeks.org/javascript/folder-structure-of-a-nestjs-project/)
+
+**Why a DDD over a Functional folder structure?**\
+A Domain Driven Design is all around better for large projects with more than five assets, as it keeps each module’s components within its folder and allows for easier navigation.
+
+**How to generate the basic outlines for each module sub-folder in the CLI (ex. users/ and auth/):**\
+nest generate module module-name\
+nest generate controller controller-name\
+nest generate service service-name 
+
+**What are DAO folders and are they needed?**\
+While DTO (data transfer object) folders contain TypeScript specific classes and define the “shape” the data enters and exits the system in, a DAO (data access object) folder interacts with the database in a similar way as an API; Fetching records, running queries, saving data. It is more common with Java backends or when a strict separation between database and business logic is needed. In NestJS, DAOs are optional because services often handle data access directly.
+
+
+## Design Alternatives
+
+### Primary Database
+
+#### Option 1: PostgreSQL
+**Pros**
+- Supports string data reliability by maintaining data consistency
+  - Implements Multi-Version Concurrency Control (MVCC) to make temporary copies of data that allow consistent reading and writing to data simultaneously
+  - Ensures data remains valid, reliable and accurate by implementing various mechanisms, such as:
+    - Data Types, to limit what can be stores where
+    - Triggers, to only retrieve/update data when needed
+    - Constraints, to limit what data can be retrieved/updated
+- Better ability to scale upwards without having to use additional tools
+- PostgreSQL has an extensive library beneficial for complex applications
+- Suitable for developers needing custom data types and complex queries
+- Has a free version
+
+
+**Cons**
+- Better with write-heavy systems (likely not like PeerRated)
+- Has a much higher learning curve (many customization options take time to get used to and we may not use all of them)
+
+#### Option 2: mySQL
+**Pros**
+- Made for speed
+- Better with read-heavy systems (likely like PeerRated)
+- Has a larger user base (more documentation to help with set-up and understanding)
+- User-friendly and simple to set-up
+- Has a free version
+
+
+**Cons**
+- Struggles with data integrity at times
+- Better with simple applications 
+
+#### Option 3: MongoDB/NoSQL Databases
+**Pros**
+- JSON structures allow for better scalability and high performance
+- MongoDB is ideal for modern applications requiring real-time analytics
+  - We will not need to use real-time analytics
+- Very good at handling large data sets
+
+
+**Cons**
+- Uses non-relational storage [[2]](#appendix)
+- ACID compliant only at the document level
+  - ACID compliance is preferred
+- Frequent and comprehensive indexing in MongoDB was discovered to result in performance degradation, especially in write-heavy applications
+  - While we are not too write-heavy, frequent indexing may be needed
+
+#### Summary
+Between NoSQL and SQL databases, SQL is the obvious choice for our project. With PeerRated, we will need reliable data retrieval and secure password storage over anything, which NoSQL databases can't always guarantee.
+
+Because of the priority data integrity has, PostgreSQL is a better database for PeerRated. While it is better with write operations, we will likely not make any operations significantly more in one direction than the other. Postgres will be easy to scale and implement additional features when PeerRated starts to scale up.
+- [Comparing MySQL, PostgreSQL, and MongoDB - GeeksforGeeks](https://www.geeksforgeeks.org/postgresql/comparing-mysql-postgresql-and-mongodb/)
+- [Difference between MySQL and PostgreSQL - GeeksforGeeks](https://www.geeksforgeeks.org/mysql/difference-between-mysql-and-postgresql/)
+- [Read Heavy vs Write Heavy System](https://medium.com/@apurvaagrawal_95485/read-heavy-vs-write-heavy-system-12b1a1cb2f67)
+- [Understanding PostgreSQL Data Integrity](https://www.dbvis.com/thetable/understanding-postgresql-data-integrity/)
+
+
+---
+
+### API
+
+#### Option 1: REST
+**Pros**
+- Its simple and fist great for users especially CRUD (users,reviews and flags)
+- JWT in headers,easy route for admin/owner(simple auth)
+- Many tools are available like (Postman, Swagger, etc.) for testing and documentation
+- Fast to set up even for beginners and also easy to connect with frontend
+
+
+**Cons**
+- It may be slow when we will require data from many places
+- No live updates we can get.Need to refresh each time
+- It would be less flexible with respect to app growth(not like GraphQL)
+
+#### Option 2: GraphQL
+**Pros**
+- Can get the data fast when requested
+- Saves time when the app expands or get larger
+
+
+**Cons**
+- Harder to learn for beginners
+- Harder to setup
+
+#### Summary
+We can start with Rest because it's easy and simple to set up. Once we have MVP working we may be can add a GraphQL layer on it.
+
+
+---
+
+### Hosting
+
+#### Option 1: Firebase
+**Pros**
+- Has personalized pricing based on what is actually used
+- Older product from 2011
+  - This means there are more places to find help when we encounter the same problems others have, who may be able to provide knowledge from their experience
+  - This also means Firebase has little chance of shutting down like a newer startup might
+- Has more product offerings:
+  - App analytics
+  - Machine learning capabilities
+  - Cross-platform compatability
+  - etc.
+- Easy authentication
+- Offers cloud functions that can be worked on locally
+
+
+**Cons**
+- Personal pricing rates may be shocking as the project expands. [Firebase Pricing.](https://firebase.google.com/pricing/#blaze-plan-calculator)
+- Built on a NoSQL database
+- Will be vendor locked to Google
+- Uses its own syntax
+- Charges based on read/write requests which can be pricy if we do a lot
+
+#### Option 2: Supabase
+**Pros**
+- Open source technology (no vendor locking)
+- Uses PostgreSQL, which we are already using for our database
+  - It is not required that we use Postgres database if using Supabase, but using the same database as our other systems use will help with efficiency and understanding
+- Better for storing relational data
+- Can automatically generate a web API if wanted
+- Can be self-hosted
+- Offers collaboration capabilities such as version control and code reviews
+- Easy authentication
+- Charges based on data transferred
+
+
+**Cons**
+- Newer startup made in 2020
+- Free tier pauses projects after a week of inactivity
+- $25/mo
+- 2 project maximum on the free tier
+- Cloud functions are tricky to develop locally and functions can only be ran one at a time
+  - There is one workaround (I’ll need to look into what it is) but it is not supported out of the box
+  - It is worthy to note that we will not be using cloud functions
+
+#### Summary
+Firebase has a strong reputation and more to offer then Supabase, but these are not all things we need. While Supabase is a new startup, it uses a relational [[2]](#appendix) postgreSQL database and has better pricing options for our needs. Authentication is very similar and “easy” between the two.
+
+
+## Appendix
+**[1] ACID compliance:** ACID stands for atomicity, consistency, isolation, and durability. It's a way to know your database is reliable and secure (like OSHA safety laws).
+
+**[2] Relational Database:** SQL, stores data in a table format which allows for specific calls to be  
+    made directly to the correct data entry
+    Non-relational Database: NoSQL, stores data all together, which necessitates going through 
+    the entire retrieved data set in order to find what you need.
+
+
+Jest: [https://jestjs.io/](https://jestjs.io/)\
+How to use Jest for testing: [TDD — Unit Testing TypeScript project with Jest | by Ivan Dimitrijevic | Medium](https://medium.com/@dimi_2011/tdd-unit-testing-typescript-project-with-jest-2557e8b84414)
+
+File structure for Next.JS (not the framework we are using but documentation is similar and can be helpful): [Getting Started: Project Structure | Next.js](https://nextjs.org/docs/app/getting-started/project-structure#colocation)
+
+Hosting links:
+- [Supabase vs Firebase](https://supabase.com/alternatives/supabase-vs-firebase)
+- [Firebase vs Supabase — I Built The Same App With Both](https://www.youtube.com/watch?v=yGbGxWMv9KA)
+- [Firebase and Supabase: Key differences you need to know - Simple Talk](https://www.red-gate.com/simple-talk/development/other-development/firebase-and-supabase-key-differences/)
+ 
+Additional Backend Language Notes:
+- TypeScript, as multithreading isn’t heavily needed. So we looked into how frameworks impact security vulnerabilities.
+- In preference order: NestJS -> Next.JS -> Deno
+- We will do testing through Unit tests
+- [What Backend Language is Right For You?](https://www.youtube.com/watch?v=ZB9somWr6QY)
+- [What is the BEST Backend Language For You?](https://www.youtube.com/watch?v=nVPkwGqhfQI)
+
+
+Additional API Notes:
+- GraphQL has a single endpoint (no under or over fetching (if optimized correctly)) and easy validation process. It can do batch requests, gives detailed error messages, and real time updates (with subscription). It has complex relationships and needs a carefully designed caching system.
+- REST requests (get, post, put, delete) are stateless, and rely on no other requests. It uses effective caching to decrease load times after the first load. REST can connect to various backends without additional user input needed. REST poses security risks, as it has no confidentiality protocols. Stateless API’s aren’t suitable for e-commerce platforms (shopping carts), and network would be a dependency.
+- gRPC also seems like an effective API [GraphQL vs REST vs SOAP vs gRPC: Top Differences - GeeksforGeeks](https://www.geeksforgeeks.org/blogs/graphql-vs-rest-vs-soap-vs-grpc/)
+
