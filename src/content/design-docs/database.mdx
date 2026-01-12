@@ -8,6 +8,9 @@ description: Database Design Documentation
 ## UML Design
 ![Database UML Diagram made with PlantUML displaying and connecting all necessary entities](/images/database-uml-design.svg)
 
+### Cardinality of Relationships Through Arrows
+![Key showing how one-to-one, one-to-many, many-to-many, and only one is displayed](/images/database-relationship-key.svg)
+
 ### Explanation of the Postgres Datatypes Used
 | Type | Category | Description | Example |
 |---|---|---|---|
@@ -28,190 +31,130 @@ description: Database Design Documentation
 <details>
   <summary>Click to show PlantUML code.</summary>
  
- ```
-  @startuml
+ ``` 
+@startuml
 
 
-  title Peer Rated Database Design UML
+title Peer Rated Database Design UML
 
-  class KEY #line:blue;back:aliceblue; {
-    - {field} private
-    + {field} public
-    # {field} protected
-  }
+entity users {
+  .. PK ..
+  user_id : integer
+  .. fields ..
+  comments : text
+  username : text
+  email : text
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
 
-  entity User {
-    .. PK ..
-    - UserID : integer
-    .. fields ..
-    + Comments : text
-    + Username : text
-    - Email : text
-    # HashedPassword : text
-  }
+entity companies {
+  .. PK ..
+  company_id : integer
+  .. fields ..
+  name : text
+  {field} company_picture : text (image url)
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
 
-  entity Company {
-    .. PK ..
-    - CompanyID : integer
-    .. fields ..
-    + Name : text
-    + {field} CompanyPicture : text (image url)
-  }
+entity reviews {
+  .. PK ..
+  review_id : integer
+  .. FK ..
+  user_id : integer
+  employee_id : integer
+  .. fields ..
+  {field} rating : smallint (1-5)
+  comments : text
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
 
-  entity Review {
-    .. PK ..
-    - ReviewID : integer
-    .. FK ..
-    UserID
-    EmployeeID
-    TagsID
-    .. fields ..
-    + {field} Rating : smallint (1-5)
-    + CreatedDate : timestamptz
-    + UpdatedDate : timestamptz
-    + Comments : text
-  }
+entity tags {
+  .. PK ..
+  tags_id : integer
+  .. FK ..
+  review_id : integer
+  .. fields ..
+  tag_name : enum ["Lots of Questions", "Slow Replies", "Approachable", ...]
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
 
-  entity Tags {
-    .. PK ..
-    TagsID : integer
-    .. fields ..
-    - Tag1 : enum ["Lots of Questions", "Slow Replies", "Approachable", " ", ...]
-    - Tag2 : enum ["Lots of Questions", "Slow Replies", "Approachable", " ", ...]
-    - Tag3 : enum ["Lots of Questions", "Slow Replies", "Approachable", " ", ...]
-  }
+entity flags {
+  .. PK ..
+  flag_id: integer
+  .. FK ..
+  user_id : integer
+  review_id : integer
+  .. fields ..
+  reason : enum ["BAD PHOTO", "INAPPROPRAITE TEXT", "OTHER", ...]
+  reason_other: text
+  status : enum [...]
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
 
-  entity Flag {
-    .. PK ..
-    - FlagID: integer
-    .. FK ..
-    UserID
-    ReviewID
-    .. fields ..
-    + Reason : enum ["BAD PHOTO", "INAPPROPRAITE TEXT", "OTHER", ...]
-    + Reason_other: text
-    + Status : enum [...]
-  }
+entity employee_to_company_mapping {
+  .. PK/CK ..
+  employee_id : integer
+  company_id : integer
+  .. fields ..
+  is_active : boolean
+  start_date : date
+  end_date : date or text "Current"
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
 
-  entity EmployeeToCompanyMappingTable {
-    .. PK/CK ..
-    EmployeeID
-    CompanyID
-    .. fields ..
-    - isActive : boolean
-    + startDate : date
-    + endDate : date or text "Current"
-  }
+entity employees {
+  .. PK ..
+  employee_id : integer
+  .. fields ..
+  employee_name : text
+  experience_level : enum [...]
+  role : enum [...] or text
+  {field} profile_picture (optional) : text (image url)
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
 
-  entity Employee {
-    .. PK ..
-    - EmployeeID : integer
-    .. fields ..
-    + EmployeeName : text
-    + ExperienceLevel : enum [...]
-    + Role : enum [...] or text
-    + {field} ProfilePicture (optional) : text (image url)
-  }
+entity recruiters {
+  .. PK ..
+  recruiter_id : integer
+  .. FK ..
+  employee_id : integer
+  .. fields ..
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
 
-  entity Recruiter {
-    .. PK ..
-    - RecruiterID : integer
-    .. FK ..
-    EmployeeID
-  }
-
-  entity Interviewer {
-    .. PK ..
-    - InterviewerID : integer
-    .. FK ..
-    EmployeeID
-  }
-
-  entity AnonymousUser {
-    .. PK ..
-    - AnonymousUserID : integer
-    .. fields ..
-    - DailyViewsLeft : integer
-  }
+entity interviewers {
+  .. PK ..
+  interviewer_id : integer
+  .. FK ..
+  employee_id : integer
+  .. fields ..
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
 
 
-
-  ' RELATIONSHIPS
-
-  Employee::EmployeeID --> EmployeeToCompanyMappingTable::EmployeeID
-  Company::CompanyID --> EmployeeToCompanyMappingTable::CompanyID
-
-  User::UserID --> Review::UserID : one-to-many
-  Employee::EmployeeID --> Review::EmployeeID : one-to-many
-
-  User::UserID --> Flag::UserID
-  Review::ReviewID -left-> Flag::ReviewID : one-to-many
-
-  Employee::EmployeeID -up-> Recruiter::EmployeeID
-  Employee::EmployeeID -up-> Interviewer::EmployeeID
-
-  Tags::TagsID -left-> Review::TagsID
+' RELATIONSHIPS
+employees::employee_id --> employee_to_company_mapping::employee_id
+companies::company_id --> employee_to_company_mapping::company_id
+users::user_id ||--o{ reviews::user_id
+employees::employee_id ||--o{ reviews::employee_id
+users::user_id --> flags::user_id
+reviews::review_id ||--o{ flags::review_id
+employees::employee_id -up-> recruiters::employee_id
+employees::employee_id -up-> interviewers::employee_id
+reviews::review_id ||-right-o{ "0-3    " tags::review_id : .                     .
 
 
 
-  ' ALIGNMENT
-
-  Employee -down[hidden]-> Tags
-  AnonymousUser -down[hidden]-> User
-
-
-
-  ' NOTES
-
-  note top of AnonymousUser
-    Out of scope for now.
-  end note
-
-  note top of Company
-    Use SQL to aggregate all recruiter/interviewer ratings under a company.
-    __
-    <i>SELECT AVGERAGE(employee.rating)
-    <i>FROM company_table INNER JOIN mapping_table INNER JOIN employee_table
-    <i>WHERE company_id = '1' <= ex. like this is amazon
-    <i>AND isActive = true
-  end note
-
-  note bottom of Review
-    Free text comment examples: Interiewer
-    __
-    "Did the interviewer show up on time?"
-    "Did the interviewer seem prepared?"
-    "How well did the interview questions match the job title and role?"
-
-    ==
-    Free text comment examples: Recruiter
-    __
-    "Was communication with the recruiter professional and clear?"
-
-    ==
-    Potential feature: add multiple reviews
-  end note
-
-  note bottom of Flag
-    Mapping: user ID, employee ID, timestamp(tz), review ID
-    <i>SELECT * FROM mapping where employeeId = “123”
-    <i>SELECT * FROM review where employeeId = “123”
-  end note
-
-  note top of Recruiter
-    Use SQL to get the average Recruiter rating.
-    __
-    <i>SELECT AVERAGE(review rating) from ...
-  end note
-
-  note top of Interviewer
-    Use SQL to get the average Interviewer rating.
-    __
-    <i>SELECT AVERAGE(review rating) from ...
-  end note
-
-
-  @enduml
+@enduml
 ```
 
 </details>
