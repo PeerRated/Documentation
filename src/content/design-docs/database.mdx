@@ -53,7 +53,7 @@ entity companies {
   company_id : integer
   .. fields ..
   name : text
-  {field} company_picture : text (image url)
+  company_picture : text (image url)
   created_date : timestamptz
   last_updated_date : timestamptz
 }
@@ -65,7 +65,7 @@ entity reviews {
   user_id : integer
   employee_id : integer
   .. fields ..
-  {field} rating : smallint (1-5)
+  rating : smallint (1-5)
   comments : text
   created_date : timestamptz
   last_updated_date : timestamptz
@@ -115,7 +115,7 @@ entity employees {
   employee_name : text
   experience_level : enum [...]
   role : enum [...] or text
-  {field} profile_picture (optional) : text (image url)
+  profile_picture (optional) : text (image url)
   created_date : timestamptz
   last_updated_date : timestamptz
 }
