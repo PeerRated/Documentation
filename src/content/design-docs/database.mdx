@@ -1,0 +1,160 @@
+---
+title: Database
+description: Database Design Documentation
+---
+
+# Database Design Documentation
+
+## UML Design
+![Database UML Diagram made with PlantUML displaying and connecting all necessary entities](/images/database-uml-design.svg)
+
+### Cardinality of Relationships Through Arrows
+![Key showing how one-to-one, one-to-many, many-to-many, and only one is displayed](/images/database-relationship-key.png)
+
+### Explanation of the Postgres Datatypes Used
+| Type | Category | Description | Example |
+|---|---|---|---|
+| boolean | Boolean | true, false, and null | true, false, NULL |
+| smallint | Numeric | 2-byte integer | -100, 0, 20000 |
+| integer | Numeric | 4-byte integer (default integer) | -5000, 0, 150000 |
+| text | Numeric | character type of variable length with no length limit | 'Hello World!' |
+| enum | Enumerated | user-defined set of static, ordered values | 'Sm', 'Med', 'Lg', 'XL' |
+| date | Date/Time | calendar dates (year, month, day) | 2024-02-16 |
+| timestamp | Date/Time | date and time (without time zone) | 2024-02-16 14:30:00 |
+| timestamptz | Date/Time | date and time (with time zone) | 2024-02-16 14:30:00-05 |
+
+
+[All Postgres Datatypes](https://www.geeksforgeeks.org/postgresql/postgresql-data-types/)
+
+
+
+<details>
+  <summary>Click to show PlantUML code.</summary>
+ 
+ ``` 
+@startuml
+
+
+title Peer Rated Database Design UML
+
+entity users {
+  .. PK ..
+  user_id : integer
+  .. fields ..
+  comments : text
+  username : text
+  email : text
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
+
+entity companies {
+  .. PK ..
+  company_id : integer
+  .. fields ..
+  name : text
+  company_picture : text (image url)
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
+
+entity reviews {
+  .. PK ..
+  review_id : integer
+  .. FK ..
+  user_id : integer
+  employee_id : integer
+  .. fields ..
+  rating : smallint (1-5)
+  comments : text
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
+
+entity tags {
+  .. PK ..
+  tags_id : integer
+  .. FK ..
+  review_id : integer
+  .. fields ..
+  tag_name : enum ["Lots of Questions", "Slow Replies", "Approachable", ...]
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
+
+entity flags {
+  .. PK ..
+  flag_id: integer
+  .. FK ..
+  user_id : integer
+  review_id : integer
+  .. fields ..
+  reason : enum ["BAD PHOTO", "INAPPROPRAITE TEXT", "OTHER", ...]
+  reason_other: text
+  status : enum [...]
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
+
+entity employee_to_company_mapping {
+  .. PK/CK ..
+  employee_id : integer
+  company_id : integer
+  .. fields ..
+  is_active : boolean
+  start_date : date
+  end_date : date or text "Current"
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
+
+entity employees {
+  .. PK ..
+  employee_id : integer
+  .. fields ..
+  employee_name : text
+  experience_level : enum [...]
+  role : enum [...] or text
+  profile_picture (optional) : text (image url)
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
+
+entity recruiters {
+  .. PK ..
+  recruiter_id : integer
+  .. FK ..
+  employee_id : integer
+  .. fields ..
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
+
+entity interviewers {
+  .. PK ..
+  interviewer_id : integer
+  .. FK ..
+  employee_id : integer
+  .. fields ..
+  created_date : timestamptz
+  last_updated_date : timestamptz
+}
+
+
+' RELATIONSHIPS
+employees::employee_id --> employee_to_company_mapping::employee_id
+companies::company_id --> employee_to_company_mapping::company_id
+users::user_id ||--o{ reviews::user_id
+employees::employee_id ||--o{ reviews::employee_id
+users::user_id --> flags::user_id
+reviews::review_id ||--o{ flags::review_id
+employees::employee_id -up-> recruiters::employee_id
+employees::employee_id -up-> interviewers::employee_id
+reviews::review_id ||-right-o{ "0-3    " tags::review_id : .                     .
+
+
+
+@enduml
+```
+
+</details>
