@@ -1,0 +1,79 @@
+---
+title: Conventional Commits
+description: Expectations for how and when to write commit messages.
+---
+
+# Conventional Commits
+
+## Conventional Commit Standards
+
+Basic Commit Message Structure:
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+There should be blank lines in between the type, body, and footer. Footer tokens must be connected with `-` if more than one word, with `BREAKING CHANGE` being an exception.
+
+**BREAKING CHANGE:** a commit that has a footer **`BREAKING CHANGE:`**, or appends a **`!`** after the type/scope, introduces a breaking API change (a change that will or could break existing code).
+
+**Types:**
+- **`fix:`** patch a bug
+- **`feat:`** introduce a new feature
+- **`chore:`** update grunt tasks
+- **`docs:`** change documentation
+- **`perf:`** performance improvement
+- **`style:`** change formatting, add missing semicolons, etc.
+- **`refactor:`** refactor production code (e.g. rename a variable)
+- **`test:`** add missing tests or change existing tests
+- **`build:`** update build configuration, development tools, etc.
+
+## Additional Rules
+
+While the following rules aren't strict, havign a consistent commit style will help both you and those you work with follow your progress. 
+
+- **Capatalization**
+  The first part of the commit message should be capitalized. (e.g. Conventionally, this looks like: feat: Add company header. If not conventional, this looks like: Add company header component.)
+- **Punctuation**
+  Because commits aren;t necessarily sentences, no punctuation is needed at the end
+- **First Word as a Present Tense Verb**
+  Commit messaged should start with a verb/action (e.g., feat: Add ... or fix: Remove ...). With verbs we use present tense (use Add instead of Added or Adds)
+
+## Examples
+
+### Basic commit message with no body
+```
+feat: Add images to Gallery component
+```
+
+### Commit message with a scope and `!` that draws attention to a breaking change
+```
+feat(api)!: Send an email to customers using EmailJS when order is placed
+```
+
+### Commit message with BREAKING CHANGE specified in the footer
+```
+feat: allow provided config object to extend other configs
+
+BREAKING CHANGE: `extends` key in config file is now used for extending other config files
+```
+
+### Commit message with multiple paragraphs and footers
+```
+fix: prevent racing of requests
+
+Introduce a request id and a reference to latest request. Dismiss incoming responses other than from latest request.
+
+Remove timeouts which were used to mitigate the racing issue but are obsolete now.
+
+Reviewed-by: Z
+Refs: #123
+
+```
+
+Notice how the last commit does in fact use punctuation.
+
+The above rules are relatively standard in SDE world but there are always exceptions. You'll also see people that don't follow them (which can be fine), but a commit that just says "yolo" or "fixed a bug" isn't helping anyone.
